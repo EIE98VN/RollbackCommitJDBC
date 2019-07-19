@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 
-public class SimulationDemo {
+public class TransactionSimulationDemo {
 
     private static final String JDBC_URL = "jdbc:mysql://localhost:3306/jdbc";
     private static final String USERNAME = "root";
@@ -32,20 +32,19 @@ public class SimulationDemo {
     }
     public static void main(String[] args) {
         Connection conn = null;
-        Savepoint savepoint = null;
+        Savepoint nameUpdateSp = null;
         try {
             conn = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
             conn.setAutoCommit(false);        
-            insertData(conn, "C1921", "Nguyen Van b", 15, 8291812);
-            savepoint = conn.setSavepoint("Savepoint");
-            updateName(conn, "C1010","name changed");
+            insertData(conn, "C1923", "Nguyen Van b", 15, 8291812);
+            nameUpdateSp = conn.setSavepoint("Update Name Savepoint");
+            updateName(conn, "C10101","name changed");
             conn.commit();
-            System.out.println("Name updated");
         } catch (SQLException e) {
             e.printStackTrace();
             try {
                 System.out.println("Execute query failed! Roll back to savepoint !~");
-                conn.rollback(savepoint);
+                conn.rollback(nameUpdateSp);
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }
